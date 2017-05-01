@@ -1,0 +1,158 @@
+<?php 
+session_start(); 
+if(!isset($_SESSION['user']) && !($_SESSION['user']['username'] == "health" && $_SESSION['user']['password'] == "health1")){ 
+	header("Location: http://rpihealthsystem.com/health/index.php");
+
+}
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="refresh" content="10; url=<?php echo $_SERVER['NS1.ZOLAHOST.COM']; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ 
+<title>:: Patient Health Monitoring System
+
+
+::</title>
+</head>
+
+<table style="width:100%" border="3">
+
+                 
+                    	<tr>
+					<td colspan="5" valign="middle" width="100%" align="center">
+					<h2> The Patient Health Monitoring System Using Raspberry Pi3 Board </h2></td>
+					
+						<td colspan="5" valign="middle" width="100%" align="center">
+					<h4> Final year Electronics and Computer Engineering  project</h4></td>
+					
+					
+				</tr>
+				
+			</table>
+
+			
+
+</html>
+
+
+
+
+<?php
+
+//$con = mysqli_connect('localhost','rpiheal2_health','-cQhz=CHh{i$');
+
+$con = mysqli_connect('localhost','rpiheal2_health','-cQhz=CHh{i$','rpiheal2_health');
+
+if($con)
+{
+	//mysql_select_db('iotelepr_patient');
+	//$sth = mysqli_query("SELECT * FROM the");
+	$sth = mysqli_query($con, "SELECT * FROM the ORDER BY createdat DESC");
+
+} else { 
+	echo "<div style='color:red; font-size:14px;'>Internal server error !!</div>";
+}
+
+?>
+
+
+
+<table width="100%" border="1">
+
+	<tr>
+
+	<th><h3><font color="red">TEMP</font></h3></th>
+
+	<th><h3><font color="blue">HEART BEAT</font></h3></th>
+
+	<th><h3><font color="green">ECG</font></h3></th>
+	<th><h3>Date  / TIME </h3></th>
+
+
+	</tr>
+
+
+<?php while($row = mysqli_fetch_assoc($sth))
+	{
+?>
+<tr>
+<th> <font color='red'><?php echo $row['temp']; ?></font></th>
+<th><font color='blue'> <?php echo $row['hbt']; ?></font></th>
+<th> <font color='green'> <?php echo $row['ecg']; ?> </font></th>
+<th><?php echo $row['createdat']; ?></th>
+
+
+</tr>
+<?php 
+} 
+?>
+
+</table>
+
+	
+///////////////////////////////////////////////putdata//////////////////////
+
+<?php
+$con = mysqli_connect('localhost','rpiheal2_health','-cQhz=CHh{i$','rpiheal2_health');
+if(!empty($_REQUEST))
+{
+$temp = @$_REQUEST['temp'];
+$hbt = @$_REQUEST['hbt'];
+$ecg = @$_REQUEST['ecg'];
+
+$query = "INSERT INTO `the` (`temp`, `hbt`, `ecg`)
+ VALUES ('".$temp."', '".$hbt."' ,'".$ecg."')";
+
+//echo $query;
+mysqli_query($con,$query);
+?>	
+///////////////////////////index.php/////////////////////////////////////////////
+
+<?php 
+	$con = mysqli_connect('localhost','rpiheal2_health','-cQhz=CHh{i$','rpiheal2_health');
+	
+	if(isset($_REQUEST['submit']) && $_REQUEST['submit'] == "Login")
+	{
+		/*$sql = "SELECT * FROM users WHERE email='".$_REQUEST['email']."' AND occupation = '".$_REQUEST['password']."'";
+		$rs = mysql_query($sql, $con) or die(mysql_error());
+		if(mysql_num_rows($rs) > 0){
+			$res = mysql_fetch_assoc($rs); 
+			session_start();
+			$_SESSION['user'] = $res; //Assign user data into session
+			header("Location: dashboard.php");
+		} else { 
+			echo "Unkown user, please enter valid details";
+		}*/
+		
+		if($_REQUEST['email'] == "health" && $_REQUEST['password'] == "health1"){
+			session_start(); 
+			$_SESSION['user'] = array("username" => "health", "password" => "health1");
+			header("Location: http://rpihealthsystem.com/health/show_data.php");
+			
+		} else { 
+		
+			echo "<div style='color:red; font-weight:bold;'>Please enter valid login details</div";
+		}
+		
+	}	
+?>
+<html>
+	<head>
+		<title>Login Page
+		</title>
+	</head>
+	<body>
+		<form name="login" id="login" method="post" action="http://rpihealthsystem.com/health/index.php">
+			<table>
+				<tr><td>Email</td><td><input type="text" name="email" value="" /></td></tr>
+				<tr><td>Password</td><td><input type="password" name="password" value="" /></td></tr>
+				<tr><td colspan="2"><input type="submit" name="submit" value="Login" /></td></tr>
+			</table>
+		</form>
+	</body>
+</html>	
+
+
